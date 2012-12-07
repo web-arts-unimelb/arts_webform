@@ -1,0 +1,60 @@
+<?php
+/**
+ * @file arts_webform.module
+ * Webform integration for FoA data.
+ */
+
+/**
+ * Implements hook_webform_select_options_info().
+ */
+function arts_webform_webform_select_options_info() {
+  $items['arts_webform_titles'] = array(
+    'title' => t('Titles'),
+    'options callback' => 'arts_webform_titles',
+  );
+  $items['arts_webform_courses'] = array(
+    'title' => t('Courses'),
+    'options callback' => 'arts_webform_courses',
+  );
+
+  return $items;
+}
+
+/**
+ * Webform select options callback.
+ *
+ * Sample callback that provides a static option list.
+ */
+function arts_webform_titles() {
+  return array(
+    'mr' => 'Mr',
+    'mrs' => 'Mrs',
+    'ms' => 'Ms',
+    'miss' => 'Miss',
+    'dr' => 'Dr',
+    'prof' => 'Prof',
+  );
+}
+
+/**
+ * Webform select options callback.
+ *
+ * Sample callback that provides a generated option list from a separate
+ * database table.
+ */
+function arts_webform_courses() {
+  $courses = array();
+
+  // Switch to the database that contains shared data.
+  db_set_active('data');
+
+  $result = db_select('courses', 'c')->fields('c', array('code', 'name', 'description'))->orderBy('name')->execute();
+  foreach ($result as $item) {
+    $courses[$item->code] = t('@name - @description', array('@name' => $item->name, '@description' => $item->description));
+  }
+
+  // Switch back to the default Drupal database.
+  db_set_active();
+
+  return $courses;
+}

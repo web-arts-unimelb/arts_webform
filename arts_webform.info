@@ -1,0 +1,6 @@
+name = FoA Webform
+description = Provides wevform integration for Faculty of Arts data.
+core = 7.x
+package = Webform
+
+dependencies[] = webform
